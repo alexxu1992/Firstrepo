@@ -46,12 +46,12 @@ function sendAccount(){
 }
 
 socket.on('confirmed',function(data){ // waiting for the server comfirm whether the account and password is correct
-  if(data == 'true'){
+  if(data == true){
     var page1 = document.getElementById('loginPage');
     page1.className = 'page1 invisible';
 
     var personalPage = document.getElementById('personalPage');
-    personalPage.className = 'page2 visible';//for changing the css
+    personalPage.className = 'page3 visible';//for changing the css
     initTable();//initate the music table
     getPeerID();
   }else{

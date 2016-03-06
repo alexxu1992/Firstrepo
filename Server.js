@@ -89,6 +89,14 @@ io.sockets.on('connect',function(socket){
 
     socket.on('login', function(data){  //when the user login judge the account and password
       console.log('here enters a account');
+      Account.find({Account:data.acc, Password:data.pass},function(err,person){
+         if(err) return handleError(err);
+         if(person.length > 0){
+           socket.emit('confirmed', true);
+         }else{
+           socket.emit('confirmed', false);
+         }
+      })
     });
 
     socket.on('peerId', function(data){ //add the peer ID into database once login

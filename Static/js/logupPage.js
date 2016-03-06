@@ -23,5 +23,14 @@ function get_radio_value() {
     }else{
       alert('Congrats! Start but not end in interest');
       ////////adding the transition of the page.
+      var page2 = document.getElementById('logupPage');
+      page2.className = 'page2 invisible';
+      var page1 = document.getElementById('loginPage');
+      page1.className = 'page1 invisible';
+      var page3 = document.getElementById('personalPage');
+      page3.className = 'page3 visible';
+      initTable();
+
+
     }
   })

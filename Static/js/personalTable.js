@@ -9,8 +9,15 @@ var tagsNumber = 16;
 function initTable(){
   getTheSize();
   setTheTabs();
-
+  prepareMatch();
 }
+
+socket.on('myImform', function(data){
+  myImform = data;
+  console.log(myImform.Goodname);
+  var imform = document.getElementById('personalImfom');
+  imform.innerHTML = 'Welcome back     ' + myImform.Goodname;
+})
 
 function getTheSize(){
   regExp = /\d+/;
@@ -35,7 +42,7 @@ function setTheTabs(){
      wholeTable.appendChild(smallTabs[i]);
      //deal with the little tab
      var thePos = calThePos(i);
-     setTheBasicStyel(i, thePos);
+     setTheBasicStyle(i, thePos);
      var brifText = document.createElement('p');
      smallTabs[i].appendChild(brifText);
      brifText.innerHTML = i + '';
@@ -54,7 +61,7 @@ function calThePos(index){
   return thisPos;
 }
 
-function setTheBasicStyel(i, Pos){
+function setTheBasicStyle(i, Pos){
   smallTabs[i].style.position = 'absolute';
   smallTabs[i].style.left = Pos.x + 'px';
   smallTabs[i].style.top = Pos.y + 'px';
@@ -63,4 +70,66 @@ function setTheBasicStyel(i, Pos){
   smallTabs[i].style.borderColor = 'white';
   smallTabs[i].style.borderWidth = '1px';
   smallTabs[i].style.borderStyle = 'solid';
+}
+
+function prepareMatch(){
+  var matchButton = document.getElementById('matchButton');
+  matchButton.addEventListener('click', function(event){
+    console.log('i click the button');
+    socket.emit('match', true);
+
+  });
+
+}
+
+socket.on('waitforPatner',function(data){
+  if(data == true){
+    console.log('i am here');
+    var waitinghint = document.getElementById('waiting');
+    waitinghint.className = 'visible';
+  }
+});
+
+var channelOpen = false;
+socket.on('match-up', function(partner_peerID){  //receive your partner's peerID and then open a call forwardly,
+  console.log('the patner peer_id is' + partner_peerID);
+  var conn = peer.connect(partner_peerID);
+  conn.on('open', function(){
+    // Receive messages
+   conn.on('data', function(data) {
+      console.log('Received', data.clientInd);
+      clientIndex = data.clientInd;
+   });
+    // Send messages
+    myPlay = setInterval(function(){
+      background(0);
+      second = millis()/1000;
+      runMyMusic();
+      runPartnerMusic();
+      conn.send({
+         clientInd:myIndex
+       });
+   },1000/60);
+
+      enterSketch();
+  });
+
+  //  enterSketch();
+
+
+});
+
+var myplay;
+function enterSketch(){
+  var canvas = document.getElementsByTagName('canvas')[0];
+  canvas.style.display = 'inline';
+  var page3 = document.getElementById('personalPage');
+  page3.className = 'page3 invisible';
+ //  myPlay = setInterval(function(){
+ //    background(0);
+ //    second = millis()/1000;
+ //    runMyMusic();
+ //    runPartnerMusic();
+ // },1000/60);
+
 }

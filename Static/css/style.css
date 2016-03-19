@@ -1,8 +1,16 @@
 body{
+  background-color: black;
   padding: 0;
   margin: 0;
   overflow: hidden;
 }
+/*#p5_loading{
+  position: absolute;
+  display:inline;
+  left:300px;
+  top:100px;
+}*/
+
 /*page1 login Page*/
 .page1{
   position:absolute;
@@ -31,7 +39,7 @@ body{
 
 .page1.invisible{
   opacity:0;
-  transform: translate(1500px,-8px);
+  transform: translate(110%,-8px);
   visibility: hidden;
 }
 
@@ -200,15 +208,13 @@ li.logup{
 /*page3 Personal Page*/
 .page3{
   position: absolute;
-  visibility: hidden;
-  opacity:0;
   transform:translate(-8px,-8px);
   width: 100%;
   height: 100%;
   /*background-color: rgb(111,51,129);*/
   font-style: italic;
   overflow: auto;
-  transition:all 2s ease 1s;
+  transition:all 1.5s ease 0.5s;
 }
 
 .page3{
@@ -221,6 +227,12 @@ li.logup{
   background-size:7px 3px;
 }
 
+.page3.invisible{
+  visibility: hidden;
+  opacity:0;
+
+}
+
 .page3.visible{
   opacity:1;
   visibility: visible;
@@ -230,15 +242,76 @@ li.logup{
   color: white;
   text-align: center;
   margin-top: 50px;
-  top: 200px;
-
+  font-size: 60px;
+  top: 3%;
 }
+
+#personalImfom{
+  position: absolute;
+  top: 6%;
+  left: 45%;
+  font-size: 30px;
+  color: white;
+}
+
+
+
 
 #wholeTable{
   position:absolute;
-  top: 150px;
-  left: 300px;
-  width: 1100px;
-  height: 1100px;
-  border: 3px solid #ffe6cc;
+  top: 15%;
+  left: 15%;
+  width: 60%;
+  height: 80%;
+  /*border: 3px solid #ffe6cc;*/
+}
+
+
+#matchButton{
+  background-color: white;
+  position: absolute;
+  width:150px;
+  height:60px;
+  font-size: 30px;
+  top: 90%;
+  left:77%;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.7s ease;
+}
+#matchWord{
+  /*/background-color: white;*/
+  pointer-events: none;
+  position: absolute;
+  top:-15px;
+  left:35px;
+  transition: all 0.7s ease;
+}
+/*adding a hover event here*/
+.match:hover {
+    transform:scale(1.2,1.2);
+}
+#waiting{
+  position: absolute;
+  font-size: 30px;
+  color: white;
+  top:94%;
+  left: 77%;
+  transition: all 0.1s ease;
+}
+#waiting.invisible{
+  visibility: hidden;
+}
+#waiting.visible{
+  visibility: visible;
+}
+
+/*4. the canvas style*/
+canvas{
+  position: absolute;
+  background-color: black;
+  left: 20%;
+  top: 12%;
+  display: none;
+
 }

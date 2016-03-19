@@ -12,6 +12,8 @@ function login(){
   document.addEventListener('keypress',enterPersonalPage);
   logupButton.addEventListener('click', logupPage);
 
+
+
 }
 
 var nowPage = 1;
@@ -47,6 +49,7 @@ function sendAccount(){
 
 socket.on('confirmed',function(data){ // waiting for the server comfirm whether the account and password is correct
   if(data == true){
+    console.log('now we are in the confirmed status');
     var page1 = document.getElementById('loginPage');
     page1.className = 'page1 invisible';
 
@@ -68,8 +71,29 @@ function getPeerID(){
   peer.on('open',function(id){
     console.log('my peer id is' + id);
     peerId = id;
+    socket.emit('peerId', peerId);
   });
-  socket.emit('peerId', peerId); //send it back to the server
+
+  peer.on('connection', function(conn){
+     console.log(typeof conn);
+     conn.on('data', function(data) {
+       console.log('Received dataclient is' + data.clientInd);
+       clientIndex = data.clientInd;
+     });
+
+     // Send messages
+     myPlay = setInterval(function(){
+       background(0);
+       second = millis()/1000;
+       runMyMusic();
+       runPartnerMusic();
+       conn.send({
+          clientInd:myIndex
+        });
+    },1000/60);
+
+       enterSketch();
+  });
 
 
-}
+ }

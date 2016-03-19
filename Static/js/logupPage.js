@@ -5,7 +5,7 @@ function logupCheck(){
   var newGoodName = document.getElementById('lunickName').value;
   var gender = get_radio_value();
   var userImfo = {Acc:newAccount, Pass:newPassword, Name:newGoodName, Gender:gender};
-  socket.emit('logup', userImfo);
+  socket.emit('signup', userImfo);
 }
 
 function get_radio_value() {
@@ -30,6 +30,7 @@ function get_radio_value() {
       var page3 = document.getElementById('personalPage');
       page3.className = 'page3 visible';
       initTable();
+      getPeerID();
 
 
     }

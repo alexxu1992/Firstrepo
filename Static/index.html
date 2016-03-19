@@ -12,19 +12,25 @@
     <script src = 'js/logupPage.js' type = 'text/javascript'></script>
     <script src = 'js/personalTable.js' type = 'text/javascript'></script>
 
+    <script src="js/sketch.js" type="text/javascript"></script>
+
 
   </head>
 
 
   <body>
     <!-- Page1 loginPage-->
+    <div id = 'p5_loading'>
+      I am loading man! Please wait until i disappear.
+    </div>
+
     <div id = 'loginPage' class = 'page1 visible'>
       <p id = 'usernameSpace'>Username:</p>
         <input id = 'account'  type = 'text' autofocus>
       <p id = 'passwordSpace'>Password: </p>
         <input id = 'password'  type = 'password'>
       <input id = 'submitButton' type = 'submit' value = 'login'>
-      <input id = 'logupButton' type = 'submit' value = 'logup'>
+      <input id = 'logupButton' type = 'submit' value = 'signup'>
     </div>
 
     <!-- page2 logupPage -->
@@ -53,7 +59,12 @@
     <!-- Page3 personalPage-->
     <div id = 'personalPage' class = 'page3 invisible'>
       <h1 id = 'P3instructor'> Personal MusicTab </h1>
+      <p id = 'personalImfom'></p>
       <div id = 'wholeTable'></div>
+      <div id = 'matchButton' class = 'match'>
+        <p id = 'matchWord' class = 'match'> Match </p>
+      </div>
+      <p id = 'waiting' class = 'invisible'> We are searching the partner for you, please wait for a minute</p>
     </div>
 
 

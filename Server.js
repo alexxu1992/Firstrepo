@@ -112,29 +112,50 @@ io.sockets.on('connect',function(socket){
               console.log('we set the wantMatch = true');
               person.wantMatch = true;
               hostPeerID = person.peerID;
-              person.save();
+              person.save(function(err){
+                Account.findOne({wantMatch:true, matchStatus:false,socketID:{$ne:socket.id}}, function(err,person){
+                  if(err) return handleError(err);
+                  if(person){
+                      console.log('we find the the patner');
+                      socket.emit('match-up', person.peerID);
+                      io.to(person.socketID).emit('partnerID', hostPeerID);
+                      person.matchStatus = true;
+                      person.save();
+                      Account.findOneAndUpdate({socketID:socket.id}, {matchStatus:true}, function(err, doc){
+                        if(err) return handleError(err);
+                        console.log('now these two people are all set to matchStatus');
+                      })
+                  }else{
+                    console.log('we cannot find the person now'+ person);
+                    socket.emit('waitforPatner', true);
+                  }
+                });
+              });
+
+
+
             }else{
               console.log('we could not find this person');
             }
           });
 
-          Account.findOne({wantMatch:true, matchStatus:false,socketID:{$ne:socket.id}}, function(err,person){
-            if(err) return handleError(err);
-            if(person){
-                console.log('we find the the patner');
-                socket.emit('match-up', person.peerID);
-                io.to(person.socketID).emit('partnerID', hostPeerID);
-                person.matchStatus = true;
-                person.save();
-                Account.findOneAndUpdate({socketID:socket.id}, {matchStatus:true}, function(err, doc){
-                  if(err) return handleError(err);
-                  console.log('now these two people are all set to matchStatus');
-                })
-            }else{
-              console.log('we cannot find the person now');
-              socket.emit('waitforPatner', true);
-            }
-          });
+          // Account.findOne({wantMatch:true, matchStatus:false,socketID:{$ne:socket.id}}, function(err,person){
+          //   if(err) return handleError(err);
+          //   if(person){
+          //       console.log('we find the the patner');
+          //       socket.emit('match-up', person.peerID);
+          //       io.to(person.socketID).emit('partnerID', hostPeerID);
+          //       person.matchStatus = true;
+          //       person.save();
+          //       Account.findOneAndUpdate({socketID:socket.id}, {matchStatus:true}, function(err, doc){
+          //         if(err) return handleError(err);
+          //         console.log('now these two people are all set to matchStatus');
+          //       })
+          //   }else{
+          //     console.log('we cannot find the person now');
+          //     socket.emit('waitforPatner', true);
+          //   }
+          // });
 
         });
 

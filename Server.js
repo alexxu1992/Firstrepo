@@ -1,87 +1,30 @@
+var express = require('express');
 var http = require('http');
 var https = require('https');
 var fs = require('fs');
 var path = require('path');
 var url = require('url');
-var mime = require('mime');
 var mongoose = require('mongoose');
+var peer = require('peer');
+var mime = require('mime');
+var compression = require('compression');
 var config = require('./Static/js/config.js');
 
-//1. firstly create the http or https server on port 8080
-var httpServer = http.createServer(requestHandler);
+//1. firstly create the express http server and then serve the static file
+var app = express();
+var httpServer = http.createServer(app);
 httpServer.listen(8081);
 
 var options = {
   key: fs.readFileSync(__dirname + '/Static/data/my-key.pem'),
   cert: fs.readFileSync(__dirname + '/Static/data/my-cert.pem')
 }
-var httpsServer = https.createServer(options,requestHandler);
+var httpsServer = https.createServer(options,app);
 httpsServer.listen(8080);
 
-var staticPath = __dirname + '/Static';
-function requestHandler(req,res){
-  var filepath = url.parse(req.url).pathname;
-  var realPath = path.join(staticPath, filepath);
-  if(filepath == '/'){
-    fs.readFile(__dirname + '/Static/index.html',function(err,data){
-      if(err){
-        res.writeHead(500);
-        res.end('error in loading the index')
-      }else{
-        res.writeHead(200);
-        res.end(data);
-      }
-    })
-  }
-  else{
-    //////////////////////////////here we need to examine the extension of the file for adding the expiration name
-    var ext = path.extname(realPath);
-    ext = ext ? ext.slice(1) : 'unknown';
-    res.setHeader("Content-type", mime.lookup(realPath));
-
-    ///////////////////////////////here we need to use the stream method
-    fs.stat(realPath, function(err, stats){
-      if(err){
-         console.log('we could not find the file here' + realPath);
-       }
-       else{
-         ////////////////////to add the lastModified header for some request
-         var lastModified = stats.mtime.toUTCString();
-         var ifModifiedSince = "If-Modified-Since".toLowerCase();
-         res.setHeader("Last-Modified", lastModified);
-
-         if(ext.match(config.Expires.fileMatch)) { //only the audio file now need to be cache
-             var expires = new Date();
-             expires.setTime(expires.getTime() + config.Expires.maxAge);
-             res.setHeader("Expires", expires.toUTCString());
-             res.setHeader("Cache-Control", "max-age=" + config.Expires.maxAge);
-          }
-
-         if(req.headers[ifModifiedSince] && lastModified == req.headers[ifModifiedSince]){
-            res.writeHead(304, "not modified");
-            res.end();
-         }else{
-           console.log(realPath);
-           //res.writeHead(200, {'Content-type': mime.lookup(realPath),  'Content-Length': stats.size});
-           var readStream = fs.createReadStream(realPath);
-           readStream.pipe(res);
-         }
-
-    // fs.stat(realPath, function(err,stats){
-    //   if(err){
-    //     console.log('we have error finding the file' + realPath);
-    //   }
-    //   else{
-    //     console.log(realPath);
-    //     res.writeHead(200, {'Content-type': mime.lookup(realPath),  'Content-Length': stats.size});
-    //     var readStream = fs.createReadStream(realPath);
-    //     readStream.pipe(res);
-    //   }
-    // })
-    }
-   });
-  }
-}
+var oneday = 86400000; //the unit is ms
+app.use(compression());// use gzip to compress the file
+app.use(express.static(path.join(__dirname, 'Static')));
 
 //2. secondly create the peer server on port 9000
 var pServer = require('peer').PeerServer;
@@ -93,7 +36,7 @@ var PeerServer = pServer({
     }
   });
 
-//3. thirdly create the socket in httpServer for relaying the peer ID;
+//3. thirdly set up the socket so that interact with the client
 var io = require('socket.io').listen(httpsServer);
 io.sockets.on('connect',function(socket){
     console.log('now we have a new friend');
@@ -162,11 +105,13 @@ io.sockets.on('connect',function(socket){
 
     socket.on('match', function(data){  //if the user wants to match then send back another's peerID
           console.log('we receive this match request');
+          var hostPeerID;
           Account.findOne({socketID:socket.id}, function(err,person){
             if(err) return handleError(err);
             if(person){
               console.log('we set the wantMatch = true');
               person.wantMatch = true;
+              hostPeerID = person.peerID;
               person.save();
             }else{
               console.log('we could not find this person');
@@ -178,6 +123,7 @@ io.sockets.on('connect',function(socket){
             if(person){
                 console.log('we find the the patner');
                 socket.emit('match-up', person.peerID);
+                io.to(person.socketID).emit('partnerID', hostPeerID);
                 person.matchStatus = true;
                 person.save();
                 Account.findOneAndUpdate({socketID:socket.id}, {matchStatus:true}, function(err, doc){
@@ -188,10 +134,46 @@ io.sockets.on('connect',function(socket){
               console.log('we cannot find the person now');
               socket.emit('waitforPatner', true);
             }
-
-          })
+          });
 
         });
+
+    socket.on('wantToKnow', function(data){
+      Account.findOne({peerID: data.partner}, function(err, person){
+         if(err) return handleError(err);
+         if(person){
+           io.to(person.socketID).emit('PartnerName', data.myName);
+         }else{
+           console.log('we can not find the partner so we do not send your name');
+         }
+
+      })
+    })
+
+    socket.on('decline', function(data){
+      Account.findOne({peerID: data}, function(err, person){
+         if(err) return handleError(err);
+         if(person){
+           io.to(person.socketID).emit('declined', true);
+         }else{
+           console.log('we can not find the partner so we do not send your name');
+         }
+      })
+    })
+
+    socket.on('closeP2P', function(data){
+      Account.findOne({socketID: socket.id},function(err, person){
+        if(err) return handleError(err);
+        if(person){
+          person.wantMatch = false;
+          person.matchStatus = false;
+          person.save();
+        }else{
+          console.log('could not find this want quit person');
+        }
+      })
+
+    })
 
     socket.on('disconnect',function(){ //remove the socket and peer ID out of the
       Account.findOne({socketID:socket.id}, function(err, person){
@@ -213,13 +195,12 @@ io.sockets.on('connect',function(socket){
 
     });
 
-
 })
 
-//4. config the database condition and different schema here
+//4. using the mongoose to open up the database
 mongoose.connect('mongodb://localhost/peerJS');
 var db = mongoose.connection;
-var Account;
+var Account;  // This is a global value.
 db.on('error', console.error.bind(console, 'connection error with database:'));
 db.once('open',function(){
   console.log("now we connect to the peerJS database");
@@ -237,6 +218,4 @@ db.once('open',function(){
   });
 
   Account = mongoose.model('accounts', AccountSchema);
-
-
 });

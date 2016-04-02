@@ -12,8 +12,6 @@ function login(){
   document.addEventListener('keypress',enterPersonalPage);
   logupButton.addEventListener('click', logupPage);
 
-
-
 }
 
 var nowPage = 1;
@@ -49,7 +47,6 @@ function sendAccount(){
 
 socket.on('confirmed',function(data){ // waiting for the server comfirm whether the account and password is correct
   if(data == true){
-    console.log('now we are in the confirmed status');
     var page1 = document.getElementById('loginPage');
     page1.className = 'page1 invisible';
 
@@ -60,10 +57,9 @@ socket.on('confirmed',function(data){ // waiting for the server comfirm whether 
   }else{
     alert('the Account or password is not correct');
   }
- console.log(data);
 })
 
-//here we use the peerJS to get the peerID and send it to the server
+//Peer: here we use the peerJS to get the peerID and send it to the server
 var peer = null;
 var peerId = null;
 function getPeerID(){
@@ -73,27 +69,41 @@ function getPeerID(){
     peerId = id;
     socket.emit('peerId', peerId);
   });
-
+ //////////////////////when somebody finds you and then you can communicate with each others,this is the client
   peer.on('connection', function(conn){
-     console.log(typeof conn);
+     enterSketch();
+
+     G_conn = conn;
      conn.on('data', function(data) {
-       console.log('Received dataclient is' + data.clientInd);
        clientIndex = data.clientInd;
+       second = data.time;
      });
 
-     // Send messages
-     myPlay = setInterval(function(){
+     // start playing and Send messages
+     G_myPlay = setInterval(function(){
        background(0);
-       second = millis()/1000;
-       runMyMusic();
-       runPartnerMusic();
+       myIndex = getMouseIndex();
+       runFireMusic(clientIndex);
+       runWaterMusic(myIndex);
        conn.send({
           clientInd:myIndex
-        });
+       });
+       G_timer.innerHTML = 'The time now is ' + floor(second);
+       if(second > 5 && G_choiceHide){
+         choiceHide = false;
+         makeChoice();
+       }
     },1000/60);
 
-       enterSketch();
-  });
+     conn.on('close', function(){
+       alert('Your partner has left');
+     })
+  })
+
+  socket.on('partnerID', function(partner_ID){
+    console.log('my partner peer ID = ' + partner_ID);
+    G_partnerID = partner_ID;
+  })
 
 
- }
+}

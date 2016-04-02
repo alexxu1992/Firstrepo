@@ -1,4 +1,5 @@
 var second;
+var startTime;
 var soundsNum = 16;
 
 var canvas;
@@ -9,13 +10,13 @@ function setup() {
 }
 
 ////////////////////////////////////////////define the music taker
-var mySounds = [];
-var partnerSounds = [];
+var fireSounds = [];
+var waterSounds = [];
 
 function preload() {
   for (i = 0; i < 16; i++) {
-    mySounds[i] = loadSound('../data/' + i + 'fire.wav'); //now the fire music are my sounds
-    partnerSounds[i] = loadSound('../data/' + i + 'water.wav');//using as the partner's sounds temporarily
+    fireSounds[i] = loadSound('../data/' + i + 'fire.mp3'); //now the fire music are my sounds
+    waterSounds[i] = loadSound('../data/' + i + 'water.mp3');//using as the partner's sounds temporarily
   }
 }
 
@@ -88,19 +89,19 @@ Musictaker.prototype.decay = function(){
 
 }
 //////////////////////////////////////////////////////////////////
-
-//////////////////////////////////////////// create my music
-var myTakers = [];
-var myIndex = 0;
+var fireTakers = [];
+var waterTakers = [];
 function initMymusic(){
   for(i = 0; i < soundsNum; i++){
-    myTakers.push(new Musictaker(mySounds[i], i, 'Host'));
-    partnerTakers.push(new Musictaker(partnerSounds[i], i, 'Client'));
+    fireTakers.push(new Musictaker(fireSounds[i], i, 'Host'));
+    waterTakers.push(new Musictaker(waterSounds[i], i, 'Client'));
   }
 }
 
-var myLastInd = 0;
-function runMyMusic(){
+var myIndex = 0;
+var clientIndex = 0;
+
+function getMouseIndex(){
   var LocX = floor(4 * mouseX / width);
   var LocY = floor(4 * mouseY / height);
   if(LocX > 3) LocX = 3;
@@ -108,64 +109,64 @@ function runMyMusic(){
   var TotalInd = 4 * LocY + LocX;
   if(TotalInd > 15) TotalInd = 15;
     else if(TotalInd < 0) TotalInd = 0;
-  SendoutIndex(TotalInd);
-  if(TotalInd != myLastInd){
-    myTakers[myLastInd].stay = false;
+  return TotalInd;
+}
+///////////////////////////////////////////////////////////////
+
+//////////////////////////////////////////// create fire music
+var fireIndex = 0;
+var fireLastInd = 0;
+function runFireMusic(theIndex){
+  fireIndex = theIndex;
+  //SendoutIndex(TotalInd);
+  if(fireIndex != fireLastInd){
+    fireTakers[fireLastInd].stay = false;
   }
   //to initialize the start point of a taker
-  if(!myTakers[TotalInd].stay){
-    myTakers[TotalInd].begin();
+  if(!fireTakers[fireIndex].stay){
+    fireTakers[fireIndex].begin();
   }
   //on the process of the taker
-  myTakers[TotalInd].currentPlay();
-  //print("this Ind =" + TotalInd + ",last Ind =" + myLastInd);
+  fireTakers[fireIndex].currentPlay();
 
   //judge the decay of others position
   for(i = 0; i < soundsNum; i++){
-    if(i != TotalInd && myTakers[i].isplay){
-      myTakers[i].decay();
+    if(i != fireIndex && fireTakers[i].isplay){
+      fireTakers[i].decay();
     }
-    myTakers[i].display();
+    fireTakers[i].display();
   }
-  myLastInd = TotalInd;
+  fireLastInd = fireIndex;
 
 }
 
-function SendoutIndex(index){
-  myIndex = index;
-  socket.emit('Index',myIndex);
-}
+
 ///////////////////////////////////////////////////////////
 
-//////////////////////////////////////////// crete patner's music
-var partnerTakers = [];
-var clientIndex = 0;
+//////////////////////////////////////////// crete water music
 
-var partnerLastInd = 0;
-socket.on('clientIndex',function(data){
-  clientIndex = data;
-  console.log(clientIndex);
-});
-
-function runPartnerMusic(){
-  if(clientIndex != partnerLastInd){
-    partnerTakers[partnerLastInd].stay = false;
+var waterIndex = 0;
+var waterLastInd = 0;
+function runWaterMusic(theIndex){
+  waterIndex = theIndex;
+  if(waterIndex != waterLastInd){
+    waterTakers[waterLastInd].stay = false;
   }
   //to initialize the start point of a taker
-  if(!partnerTakers[clientIndex].stay){
-    partnerTakers[clientIndex].begin();
+  if(!waterTakers[waterIndex].stay){
+    waterTakers[waterIndex].begin();
   }
   //on the process of the taker
-  partnerTakers[clientIndex].currentPlay();
+  waterTakers[waterIndex].currentPlay();
 
   //judge the decay of others position
   for(i = 0; i < soundsNum; i++){
-    if(i != clientIndex && partnerTakers[i].isplay){
-      partnerTakers[i].decay();
+    if(i != waterIndex && waterTakers[i].isplay){
+      waterTakers[i].decay();
     }
-    partnerTakers[i].display();
+    waterTakers[i].display();
   }
-  partnerLastInd = clientIndex;
+  waterLastInd = waterIndex;
 
 }
 /////////////////////////////////////////////////////////////////

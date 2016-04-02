@@ -32,6 +32,5 @@ function get_radio_value() {
       initTable();
       getPeerID();
 
-
     }
   })

@@ -306,12 +306,70 @@ li.logup{
   visibility: visible;
 }
 
-/*4. the canvas style*/
+/*4. the page4 style*/
+
 canvas{
   position: absolute;
   background-color: black;
   left: 20%;
   top: 12%;
   display: none;
+}
 
+#gameTimer{
+  position: absolute;
+  left: 80%;
+  top: 55%;
+  display: none;
+  font-size: 30px;
+  color: white;
+}
+
+#choice{
+  position: absolute;
+  background-color: black;
+  left: 80%;
+  top: 60%;
+  width: 500px;
+  height: 500px;
+  display: none;
+
+}
+
+#choice p{
+  color: white;
+  position: absolute;
+  top: 5%;
+  font-size: 35px;
+
+}
+
+#Ychoice{
+  position: absolute;
+  width: 100px;
+  height:50px;
+  top: 30%;
+  left:27%;
+
+}
+
+#Nchoice{
+  position: absolute;
+  width:100px;
+  height:50px;
+  top: 30%;
+  left: 52%;
+}
+
+#quitMatch{
+  position: absolute;
+  top:50%;
+  left:44%;
+  width: 70px;
+  height: 35px;
+
+}
+
+.page4.invisible{
+  display: none;
 }

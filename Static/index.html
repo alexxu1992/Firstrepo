@@ -1,6 +1,6 @@
 <html>
   <head>
-    <link rel="stylesheet" type = 'text/css' href="css/style.css">
+    <link rel = 'stylesheet' type = 'text/css' href="css/style.css">
 
     <script type = 'text/javascript' src = 'libs/peer.min.js'></script>
     <script type = 'text/javascript' src = 'libs/socket.io.js'></script>
@@ -11,64 +11,66 @@
     <script src = 'js/loginPage.js' type = 'text/javascript'></script>
     <script src = 'js/logupPage.js' type = 'text/javascript'></script>
     <script src = 'js/personalTable.js' type = 'text/javascript'></script>
-
-    <script src="js/sketch.js" type="text/javascript"></script>
-
-
+    <script src = "js/sketch.js" type = "text/javascript"></script>
   </head>
-
 
   <body>
     <!-- Page1 loginPage-->
-    <div id = 'p5_loading'>
-      I am loading man! Please wait until i disappear.
+  <div id = 'p5_loading'>
+    I am loading man! Please wait until i disappear.
+  </div>
+
+  <div id = 'loginPage' class = 'page1 visible'>
+    <p id = 'usernameSpace'>Username:</p>
+      <input id = 'account'  type = 'text' autofocus>
+    <p id = 'passwordSpace'>Password: </p>
+      <input id = 'password'  type = 'password'>
+    <input id = 'submitButton' type = 'submit' value = 'login'>
+    <input id = 'logupButton' type = 'submit' value = 'signup'>
+  </div>
+
+  <!-- page2 logupPage -->
+  <div id = 'logupPage' class = 'page2 invisible'>
+    <h1 id = 'logupInstruction'> Welcome for registering Inbud</h1>
+      <ul class = 'logup' style="list-style-type:none">
+        <li class='logup'>UserName:</li>
+        <li class='logup'>Password:</li>
+        <li class='logup'>NickName:</li>
+        <li class='logup'>Gender:</li>
+      </ul>
+
+       <input id = 'luAccount' type = 'text' autofocus="true">
+       <input id = 'luPassWord' type = 'password'>
+       <input id = 'lunickName' type = 'text'>
+
+       <p id = 'genderNote1'> Male </p>
+       <p id = 'genderNote2'> Female </p>
+       <input id = 'luGender1' type = 'radio' name = 'gender' value = 'boy' checked>
+       <input id = 'luGender2' type="radio" name="gender" value="girl">
+       <input id = 'GO' type = 'submit' value = 'gogogo!!'>
+
+  </div>
+
+
+  <!-- Page3 personalPage-->
+  <div id = 'personalPage' class = 'page3 invisible'>
+    <h1 id = 'P3instructor'> Personal MusicTab </h1>
+    <p id = 'personalImfom'></p>
+    <div id = 'wholeTable'></div>
+    <div id = 'matchButton' class = 'match'>
+      <p id = 'matchWord' class = 'match'> Match </p>
     </div>
+    <p id = 'waiting' class = 'invisible'> We are searching the partner for you, please wait for a minute</p>
+  </div>
 
-    <div id = 'loginPage' class = 'page1 visible'>
-      <p id = 'usernameSpace'>Username:</p>
-        <input id = 'account'  type = 'text' autofocus>
-      <p id = 'passwordSpace'>Password: </p>
-        <input id = 'password'  type = 'password'>
-      <input id = 'submitButton' type = 'submit' value = 'login'>
-      <input id = 'logupButton' type = 'submit' value = 'signup'>
-    </div>
-
-    <!-- page2 logupPage -->
-    <div id = 'logupPage' class = 'page2 invisible'>
-      <h1 id = 'logupInstruction'> Welcome for registering Inbud</h1>
-        <ul class = 'logup' style="list-style-type:none">
-          <li class='logup'>UserName:</li>
-          <li class='logup'>Password:</li>
-          <li class='logup'>NickName:</li>
-          <li class='logup'>Gender:</li>
-        </ul>
-
-         <input id = 'luAccount' type = 'text' autofocus="true">
-         <input id = 'luPassWord' type = 'password'>
-         <input id = 'lunickName' type = 'text'>
-
-         <p id = 'genderNote1'> Male </p>
-         <p id = 'genderNote2'> Female </p>
-         <input id = 'luGender1' type = 'radio' name = 'gender' value = 'male' checked>
-         <input id = 'luGender2' type="radio" name="gender" value="female">
-         <input id = 'GO' type = 'submit' value = 'gogogo!!'>
-
-    </div>
-
-
-    <!-- Page3 personalPage-->
-    <div id = 'personalPage' class = 'page3 invisible'>
-      <h1 id = 'P3instructor'> Personal MusicTab </h1>
-      <p id = 'personalImfom'></p>
-      <div id = 'wholeTable'></div>
-      <div id = 'matchButton' class = 'match'>
-        <p id = 'matchWord' class = 'match'> Match </p>
-      </div>
-      <p id = 'waiting' class = 'invisible'> We are searching the partner for you, please wait for a minute</p>
-    </div>
-
-
-
+   <!-- page4 matchPage -->
+   <p id = 'gameTimer' class = 'page4'> </p>
+   <div id = 'choice' class = 'page4'>
+      <p> Do you want to exchange your name with him/her? </p>
+      <input id = 'Ychoice' type = 'submit' value = 'yes!^o^'>
+      <input id = 'Nchoice' type = 'submit' value = 'no..-_-'>
+      <input id = 'quitMatch' type = 'submit' value = 'quit'>
+   </div>
 
   </body>
 

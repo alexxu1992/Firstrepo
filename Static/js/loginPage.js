@@ -3,7 +3,7 @@ window.addEventListener('load', login);
 var socket = io.connect();
 socket.on('connect',function(){
   console.log('connected');
-})
+});
 
 function login(){
   var subButton = document.getElementById('submitButton');
@@ -98,7 +98,7 @@ function getPeerID(){
      conn.on('close', function(){
        alert('Your partner has left');
      })
-  })
+  });
 
   socket.on('partnerID', function(partner_ID){
     console.log('my partner peer ID = ' + partner_ID);

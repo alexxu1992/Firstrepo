@@ -1,0 +1,375 @@
+body{
+  background-color: black;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+}
+/*#p5_loading{
+  position: absolute;
+  display:inline;
+  left:300px;
+  top:100px;
+}*/
+
+/*page1 login Page*/
+.page1{
+  position:absolute;
+  width: 100%;
+  height: 100%;
+  border: 0px dashed red;
+  font-style: italic;
+  overflow: auto;
+  /*background-color: rgb(9,97,72);*/
+  transition: all 3s ease;
+}
+
+.page1.visible{
+  background:
+  radial-gradient(black 15%, transparent 16%) 0 0,
+  radial-gradient(black 15%, transparent 16%) 8px 8px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+  background-color:rgb(9,97,72);
+  background-size:7px 3px;
+  opacity:1;
+  transform: translate(0px,0px);
+  visibility: visible;
+}
+
+
+.page1.invisible{
+  opacity:0;
+  transform: translate(110%,-8px);
+  visibility: hidden;
+}
+
+#usernameSpace{
+  position:absolute;
+  top:35%;
+  left:40%;
+  font-size: 30px;
+  /*color:rgb(9,97,72);*/
+}
+
+#account{
+  position: absolute;
+  width: 200px;
+  height: 30px;
+  top: 39%;
+  left:50%;
+  overflow: auto;
+}
+
+#passwordSpace{
+  position:absolute;
+  top:45%;
+  left:40%;
+  font-size: 30px;
+  /*color:rgb(9,97,72);*/
+}
+
+#password{
+  position: absolute;
+  top: 49%;
+  left: 50%;
+  width: 200px;
+  height:30px;
+  overflow: auto;
+}
+
+#submitButton{
+  position: absolute;
+  top:54%;
+  left:55%;
+  width:100px;
+  height:20px;
+}
+
+#logupButton{
+  position: absolute;
+  top:57%;
+  left:55%;
+  width:100px;
+  height:20px;
+}
+
+/*page2 lopup Page*/
+.page2{
+  background-color: #ff884d;
+  position: absolute;
+  width: 61%;
+  height: 100%;
+  left:39%;
+  font-size: 25px;
+  font-style: italic;
+  overflow: auto;
+  transition: all 1.5s ease-out;
+}
+
+.page2.visible{
+
+  transform: translate(0px,0px);
+  visibility: visible;
+}
+
+.page2.invisible{
+  /*opacity:1;*/
+  transform: translate(1250px,0px);
+  visibility: hidden;
+}
+
+
+
+#logupInstruction{
+  position:absolute;
+  font-size: 35px;
+  left:22%;
+}
+
+ul.logup{
+  position: absolute;
+  left:270px;
+  top: 210px;
+}
+
+li.logup{
+  margin:40px;
+}
+
+#luAccount{
+  position: absolute;
+  width:200px;
+  height:33px;
+  left:42%;
+  top:29%;
+}
+
+#luPassWord{
+  position: absolute;
+  width:200px;
+  height:33px;
+  left:42%;
+  top:36%;
+}
+
+#lunickName{
+  position: absolute;
+  width:200px;
+  height:33px;
+  left:42%;
+  top:43%;
+}
+
+#lunickName{
+  position: absolute;
+  width:200px;
+  height:33px;
+  left:42%;
+  top:43%;
+}
+
+#genderNote1{
+  position: absolute;
+  font-size: 25px;
+  left:42%;
+  top:48%;
+}
+#genderNote2{
+  position: absolute;
+  font-size: 25px;
+  left:50%;
+  top:48%;
+}
+
+#luGender1{
+  position: absolute;
+  width:25px;
+  height:28px;
+  left:545px;
+  top:477px;
+}
+#luGender2{
+  position: absolute;
+  width:25px;
+  height:28px;
+  left:664px;
+  top:477px;
+}
+#GO{
+  position: absolute;
+  width:200px;
+  height:33px;
+  left:42%;
+  top:58%;
+}
+
+
+
+/*page3 Personal Page*/
+.page3{
+  position: absolute;
+  transform:translate(-8px,-8px);
+  width: 100%;
+  height: 100%;
+  /*background-color: rgb(111,51,129);*/
+  font-style: italic;
+  overflow: auto;
+  transition:all 1.5s ease 0.5s;
+}
+
+.page3{
+  background:
+  radial-gradient(black 15%, transparent 16%) 0 0,
+  radial-gradient(black 15%, transparent 16%) 8px 8px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 0 1px,
+  radial-gradient(rgba(255,255,255,.1) 15%, transparent 20%) 8px 9px;
+  background-color:#282828;
+  background-size:7px 3px;
+}
+
+.page3.invisible{
+  visibility: hidden;
+  opacity:0;
+
+}
+
+.page3.visible{
+  opacity:1;
+  visibility: visible;
+}
+
+#P3instructor{
+  color: white;
+  text-align: center;
+  margin-top: 50px;
+  font-size: 60px;
+  top: 3%;
+}
+
+#personalImfom{
+  position: absolute;
+  top: 6%;
+  left: 45%;
+  font-size: 30px;
+  color: white;
+}
+
+
+
+
+#wholeTable{
+  position:absolute;
+  top: 15%;
+  left: 15%;
+  width: 60%;
+  height: 80%;
+  /*border: 3px solid #ffe6cc;*/
+}
+
+
+#matchButton{
+  background-color: white;
+  position: absolute;
+  width:150px;
+  height:60px;
+  font-size: 30px;
+  top: 90%;
+  left:77%;
+  overflow: hidden;
+  cursor: pointer;
+  transition: all 0.7s ease;
+}
+#matchWord{
+  /*/background-color: white;*/
+  pointer-events: none;
+  position: absolute;
+  top:-15px;
+  left:35px;
+  transition: all 0.7s ease;
+}
+/*adding a hover event here*/
+.match:hover {
+    transform:scale(1.2,1.2);
+}
+#waiting{
+  position: absolute;
+  font-size: 30px;
+  color: white;
+  top:94%;
+  left: 77%;
+  transition: all 0.1s ease;
+}
+#waiting.invisible{
+  visibility: hidden;
+}
+#waiting.visible{
+  visibility: visible;
+}
+
+/*4. the page4 style*/
+
+canvas{
+  position: absolute;
+  background-color: black;
+  left: 20%;
+  top: 12%;
+  display: none;
+}
+
+#gameTimer{
+  position: absolute;
+  left: 80%;
+  top: 55%;
+  display: none;
+  font-size: 30px;
+  color: white;
+}
+
+#choice{
+  position: absolute;
+  background-color: black;
+  left: 80%;
+  top: 60%;
+  width: 500px;
+  height: 500px;
+  display: none;
+
+}
+
+#choice p{
+  color: white;
+  position: absolute;
+  top: 5%;
+  font-size: 35px;
+
+}
+
+#Ychoice{
+  position: absolute;
+  width: 100px;
+  height:50px;
+  top: 30%;
+  left:27%;
+
+}
+
+#Nchoice{
+  position: absolute;
+  width:100px;
+  height:50px;
+  top: 30%;
+  left: 52%;
+}
+
+#quitMatch{
+  position: absolute;
+  top:50%;
+  left:44%;
+  width: 70px;
+  height: 35px;
+
+}
+
+.page4.invisible{
+  display: none;
+}

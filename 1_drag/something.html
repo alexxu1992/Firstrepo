@@ -1,0 +1,59 @@
+<html>
+    <head>
+        <script type = "text/javascript">
+            window.addEventListener('load', init); //we need to use the call back function here,
+                                                  //just like the setup() in P5;
+
+            console.log("Hello I am here");
+
+            var myName;
+            var thebutton;
+            var thevideo;
+            myName = "Xuhui";
+            console.log(myName);
+            console.log(typeof myName);
+
+            function init() {
+               var mydiv = document.getElementById("mydiv");
+               //mydiv.innerHTML = "something else";
+
+               thebutton = document.getElementById("button");
+               thebutton.addEventListener('click', buttonClicked);
+
+               thevideo = document.getElementById('thevideo');
+               thevideo.addEventListener('timeupdate', function(evt){
+                 console.log(evt);
+               })
+            }
+
+            function buttonClicked(){
+               //alert("hey stop that!!!");
+               thebutton.style.color = 'yellow'; //using the '.' to enter the attribute of the element
+               if(thevideo.paused){
+                 thevideo.play();
+               }else{
+                 thevideo.pause();
+               }
+            }
+        </script>
+    </head>
+    <body>
+      Hello World
+
+      <div id = "my div">
+         Here is some stuff
+      </div>
+
+      <button id = 'button'>
+         Click Me
+      </button>
+
+      <video id="thevideo" controls>
+         <!-- <source src = "http://itp.nyu.edu/~sve204/liveweb_spring2016/video.mp4"
+         type = "video/mp4">
+         <source src = "http://itp.nyu.edu/~sve204/liveweb_spring2016/video.ogg"
+         type = "video/ogg"> -->
+         <source src="test1.mp4" type="video/mp4">
+      </video>
+    </body>
+</html>

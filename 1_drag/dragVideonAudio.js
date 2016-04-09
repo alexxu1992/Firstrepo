@@ -17,7 +17,7 @@ function init(){
 
   document.addEventListener('mousedown',function(event){
     console.log(event.target);
-  })
+  });
 
   document.addEventListener('drag',function(event){
       //event.preventDefault();

@@ -15,15 +15,17 @@ body{
 }
 
 #audioTag1{
-  position: absolute;
-  width: 100px;
-  height: 100px;
-  top:300px;
-  left:100px;
-  background-color: #0000ff;
-  z-index: 1;
-}
 
+}
+.audioTag{
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    top:300px;
+    left:100px;
+    background-color: #0000ff;
+    z-index: 1;
+}
 #myvideo{
   width: 1080px;
   height: 720px;

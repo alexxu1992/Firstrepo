@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Final//EN">
+<HTML>
+<HEAD>
+<TITLE>CloneTest</TITLE>
+<SCRIPT language="javascript" type="text/javascript">
+<!--
+function cloneAndInsert(IdOfElement)
+{
+element = document.getElementById(IdOfElement);
+element = element.cloneNode(true);
+element.id = 'new' + element.id;
+
+new_element = document.getElementById(IdOfElement).appendChild(element);
+return true;
+}
+// -->
+</SCRIPT>
+<STYLE type="text/css">
+BODY {
+
+color:  #FFFFFF;
+}
+A {
+display:  inline;
+border-style: solid;
+border-color: #0000AA;
+border-width: 4px;
+background-color: #0000FF;
+padding:  5px 10px 5px 10px;
+vertical-align: middle;
+}
+A:link {
+color:  #FF0000;
+}
+A:visited {
+color:  #800000;
+}
+A:hover {
+border-style: outset;
+color:  #00FF00;
+}
+A:active {
+border-style: inset;
+color:  #FF00FF;
+}
+
+#div1 {
+border-style: outset;
+border-color: #00FF00;
+border-width: 2px;
+background-color: #FF0000;
+color:  #000000;
+}
+#newdiv1 {
+border-style: inset;
+border-color: #AAAAFF;
+border-width: 2px;
+background-color: #0000FF;
+color:  #FFFFFF;
+}
+</STYLE>
+</HEAD>
+
+<BODY>
+<DIV id="div1">
+<P>A Paragraph</P>
+<P>Another Paragraph</P>
+</DIV>
+<BR>
+<A href='javascript:' onClick="cloneAndInsert('div1');">Click Here</A>
+</BODY>
+</HTML>

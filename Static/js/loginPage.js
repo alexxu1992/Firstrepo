@@ -49,10 +49,11 @@ socket.on('confirmed',function(data){ // waiting for the server comfirm whether 
   if(data == true){
     var page1 = document.getElementById('loginPage');
     page1.className = 'page1 invisible';
-
     var personalPage = document.getElementById('personalPage');
     personalPage.className = 'page3 visible';//for changing the css
-    initTable();//initate the music table
+  //  $(document).off('keypress');
+    document.removeEventListener('keypress', enterPersonalPage);
+    initTable();///////////////////////////////initate the music table
     getPeerID();
   }else{
     alert('the Account or password is not correct');

@@ -7,10 +7,11 @@ var regExp;
 var tagsNumber = 16;
 
 function initTable(){
-  getTheSize();
-  setTheTabs();
-  prepareMatch();
-  setMaterial();
+    getTheSize();
+    setTheTabs();
+    prepareMatch();
+    setMaterial();
+
 }
 
 var myGoodname;
@@ -19,7 +20,7 @@ socket.on('myImform', function(data){
   myGoodname = data.Goodname;
   var imform = document.getElementById('personalImfom');
   imform.innerHTML = 'Welcome back     ' + myGoodname;
-})
+});
 
 function getTheSize(){
   regExp = /\d+/;
@@ -40,7 +41,7 @@ function setTheTabs(){
   for(i = 0; i < tagsNumber; i++){
      var newTab = document.createElement('DIV');
      smallTabs.push(newTab);
-     smallTabs[i].className = 'musicTab';
+     smallTabs[i].className = 'musicTab appendable';
      wholeTable.appendChild(smallTabs[i]);
      //deal with the little tab
      var thePos = calThePos(i);
@@ -83,18 +84,26 @@ function prepareMatch(){
 }
 
 function setMaterial(){
-  for(i = 0; i < tagsNumber; i++){  //put the fire music material
-    var fireTag = document.createElement('div');
-    $('#materialTable').append(fireTag);
-    $(fireTag).addClass('material');
-    $(fireTag).css('background-color', 'red');
-  }
-  for(i = 0; i < tagsNumber; i++){
-    var waterTag = document.createElement('div');
-    $('#materialTable').append(waterTag);
-    $(waterTag).addClass('material');
-    $(waterTag).css('background-color', 'blue');
-  }
+
+    for(var i = 0; i < tagsNumber; i++){  //put the fire music material
+
+        var Tag = document.createElement('div');
+        if(i<tagsNumber/2) {
+            $(Tag).css('background-color', 'red');
+        }
+        else{
+            $(Tag).css('background-color', 'blue');
+        }
+        $('#materialTable').append(Tag);
+        $(Tag).addClass('material');
+        $(Tag).attr("id", 'audioTag' + i);
+        $(Tag).attr("draggable", 'true');
+
+        $(Tag).append('<input type="file" hidden>');
+        $(Tag).append('<audio id = "secondAudio" loop><source src = "white.mp3" type="audio/mp3"></audio>');
+    }
+    initDrag();
+
 }
 
 socket.on('waitforPatner',function(data){

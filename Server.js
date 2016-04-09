@@ -37,7 +37,8 @@ var PeerServer = pServer({
   });
 
 //3. thirdly set up the socket so that interact with the client
-var io = require('socket.io').listen(httpsServer);
+var io = require('socket.io').listen(httpServer);
+// var io = require('socket.io').listen(httpsServer);
 io.sockets.on('connect',function(socket){
     console.log('now we have a new friend');
 

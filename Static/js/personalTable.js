@@ -1,99 +1,119 @@
-var wholeTable;
-var unitWdith;
-var unitHeight;
-var originX, originY;
-var smallTabs = [];
-var regExp;
 var tagsNumber = 16;
-
-function initTable(){
-  getTheSize();
-  setTheTabs();
-  prepareMatch();
-  setMaterial();
+///////////////////////////////////////////create a app object to record some basic imformation
+var Me = {
+  Name: null,
+  socketId: null,
+  peer: null,
+  peerId: null,
+  playlist: new Array(16)
 }
-
-var myGoodname;
+var Client = {
+  Name: null,
+  socketId: null,
+  peer: null,
+  peerId: null,
+  playlist: new Array(16),
+}
+var app = {
+  conn: null,
+  play: null,
+  agree: false,
+  choiceHide: true,
+  canvas: null,
+  timer: null,
+  materialSounds:[],
+  allSounds:[]
+}
 socket.on('myImform', function(data){
-  var myImform = data;
-  myGoodname = data.Goodname;
+  Me.Name = data.Goodname;
   var imform = document.getElementById('personalImfom');
-  imform.innerHTML = 'Welcome back     ' + myGoodname;
+  imform.innerHTML = 'Welcome back     ' + Me.Name;
+  Me.playlist = data.playList;
 })
 
-function getTheSize(){
-  regExp = /\d+/;
-  wholeTable = document.getElementById('wholeTable');
-  unitWidth = window.getComputedStyle(wholeTable, null).getPropertyValue('width');
-  unitHeight = window.getComputedStyle(wholeTable, null).getPropertyValue('height');
-  unitWidth = parseInt(regExp.exec(unitWidth)[0]);
-  unitHeight = parseInt(regExp.exec(unitHeight)[0]);
-  unitWidth = unitWidth / Math.sqrt(tagsNumber);
-  unitHeight = unitHeight / Math.sqrt(tagsNumber);
-  originX = window.getComputedStyle(wholeTable, null).getPropertyValue('left');
-  originY = window.getComputedStyle(wholeTable, null).getPropertyValue('top');
-  originX = parseInt(regExp.exec(originX)[0]);
-  originY = parseInt(regExp.exec(originY)[0]);
+//////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////initialize the personal table and material table
+function initTable(){
+  //Me.playlist[5] = sketch.fireSounds[5].url;
+  setWhole();
+  setMaterial();
+  prepareMatch();
 }
 
-function setTheTabs(){
+function setWhole(){
+  var myTabs = [];
   for(i = 0; i < tagsNumber; i++){
-     var newTab = document.createElement('DIV');
-     smallTabs.push(newTab);
-     smallTabs[i].className = 'musicTab';
-     wholeTable.appendChild(smallTabs[i]);
-     //deal with the little tab
-     var thePos = calThePos(i);
-     setTheBasicStyle(i, thePos);
-     var brifText = document.createElement('p');
-     smallTabs[i].appendChild(brifText);
-     brifText.innerHTML = i + '';
-     brifText.style.color = 'red';
-     brifText.style.position = 'absolute';
-     brifText.style.left= '13px';
+    myTabs[i] = document.createElement('div');
+    $('#wholeTable').append(myTabs[i]);
+    $(myTabs[i]).addClass('myTabs')
+    .addClass('appendable')
+    .attr({'id':'myTab' + i});
   }
-}
 
-function calThePos(index){
-  var xNum = index % Math.sqrt(tagsNumber);
-  var yNum = Math.floor(index / Math.sqrt(tagsNumber));
-  var xPos = xNum * unitWidth;
-  var yPos = yNum * unitHeight;
-  var thisPos = {x:xPos, y:yPos};
-  return thisPos;
-}
+  for(j = 0; j < Me.playlist.length; j++){
+    if(Me.playlist[j] != null){
+      var thisMusic = document.createElement('audio');
+      $(thisMusic).attr({'loop':'true', 'src':Me.playlist[j], 'type':'audio/mp3'});
 
-function setTheBasicStyle(i, Pos){
-  smallTabs[i].style.position = 'absolute';
-  smallTabs[i].style.left = Pos.x + 'px';
-  smallTabs[i].style.top = Pos.y + 'px';
-  smallTabs[i].style.width = unitWidth + 'px';
-  smallTabs[i].style.height = unitHeight + 'px';
-  smallTabs[i].style.borderColor = 'white';
-  smallTabs[i].style.borderWidth = '1px';
-  smallTabs[i].style.borderStyle = 'solid';
-}
+      var musicTag = document.createElement('div');
+      var filename = Me.playlist[j].substring(Me.playlist[j].lastIndexOf('/') + 1, Me.playlist[j].lastIndexOf('.'));
+      $(myTabs[j]).append(musicTag).removeClass('appendable');
+      $(musicTag).html(filename)
+      .addClass('material')
+      .addClass('appended')
+      .attr({'id':'mylist' + j, 'draggable':'true'})
+      .append(thisMusic)
+      .append('<input type="file" hidden>')
+      .css({'background-color':'#b3b3ff','position':'absolute', 'width':$(myTabs[j]).width()+'px', 'height':$(myTabs[j]).height()+'px'});
 
-function prepareMatch(){
-  var matchButton = document.getElementById('matchButton');
-  matchButton.addEventListener('click', function(event){
-    socket.emit('match', true);
-  });
+      for(var k = 0; k < app.materialSounds.length; k++){
+        if(Me.playlist[j] == app.materialSounds[k].url){
+          app.materialSounds.splice(k,1);
+          break;
+        }
+      }
+
+    }
+  }
 
 }
 
 function setMaterial(){
-  for(i = 0; i < tagsNumber; i++){  //put the fire music material
-    var fireTag = document.createElement('div');
-    $('#materialTable').append(fireTag);
-    $(fireTag).addClass('material');
-    $(fireTag).css('background-color', 'red');
+  for(var i = 0; i < app.materialSounds.length; i++){
+    var materialSound = document.createElement('audio');
+    $(materialSound).attr({'loop':'true', 'src':app.materialSounds[i].url, 'type':'audio/mp3'});
+
+    var materialTag = document.createElement('div');
+    var filename = app.materialSounds[i].url.substring(app.materialSounds[i].url.lastIndexOf('/') + 1, app.materialSounds[i].url.lastIndexOf('.'));
+    $('#materialTable').append(materialTag);
+    $(materialTag)
+    .addClass('material')
+    .html(filename)
+    .attr({'id':'material' + i, 'draggable':'true'})
+    .append(materialSound)
+    .append('<input type="file" hidden>')
+    .css({'background-color': '#b3b3ff', 'color':'white'});
   }
-  for(i = 0; i < tagsNumber; i++){
-    var waterTag = document.createElement('div');
-    $('#materialTable').append(waterTag);
-    $(waterTag).addClass('material');
-    $(waterTag).css('background-color', 'blue');
+  initDrag();
+}
+
+function prepareMatch(){
+  var matchButton = document.getElementById('matchButton');
+  matchButton.addEventListener('click', checkMusic);
+}
+
+function checkMusic(){
+  var fullList = true;
+  for(i = 0; i < Me.playlist.length; i++){
+    if(Me.playlist[i] == null){
+      fullList = false;
+      alert('Please spend a little time to fullfill your music table ^_^');
+      break;
+    }
+  }
+  if(fullList){
+   socket.emit('match', true);
   }
 }
 
@@ -103,3 +123,65 @@ socket.on('waitforPatner',function(data){
     waitinghint.className = 'visible';
   }
 });
+//////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////get peer ID and wait for other call me
+function getPeerID(){
+  Me.peer = new Peer({host:'xx551.itp.io',port:9000,path:'/'});
+  Me.peer.on('open',function(id){
+    console.log('my peer id is' + id);
+    Me.peerId = id;
+    socket.emit('peerId', Me.peerId);
+  });
+ //when somebody finds you and then you can communicate with each others,this is the client
+  Me.peer.on('connection', function(conn){
+
+    // enterSketch();
+     app.conn = conn;
+     conn.on('data', function(data) {
+       if(data.event == 'clientList'){
+         conn.send({
+           event: 'clientList',
+           clientList: Me.playlist
+         });
+         Client.playlist = data.clientList;
+         initTheMusic();
+         startPassivePlay();
+         //enterSketch();
+       }
+       else if(data.event == 'Index'){
+         sketch.clientIndex = data.clientInd;
+         sketch.second = data.time;
+       }
+     });
+
+     conn.on('close', function(){
+       alert('Your partner has left');
+     })
+  })
+
+  socket.on('partnerID', function(partner_ID){
+    console.log('my partner peer ID = ' + partner_ID);
+    //G_partnerID = partner_ID;
+    Client.peerId = partner_ID;
+  })
+}
+//////////////////////////////////////////////////////////
+function startPassivePlay(){
+    app.play = setInterval(function(){
+      background(0);
+      sketch.myIndex = getMouseIndex();
+      runMyMusic(sketch.clientIndex);
+      runClientMusic(sketch.myIndex);
+      app.conn.send({
+         event: 'Index',
+         clientInd:sketch.myIndex
+      });
+      app.timer.innerHTML = 'The time now is ' + floor(sketch.second);
+      if(sketch.second > 15 && app.choiceHide){
+        app.choiceHide = false;
+        makeChoice();
+      }
+   },1000/60);
+
+}

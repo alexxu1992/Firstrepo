@@ -61,7 +61,8 @@ io.sockets.on('connect',function(socket){
             peerID: String,
             onlineStatus: true,
             wantMatch: false,
-            matchStatus: false
+            matchStatus: false,
+            playList:[],
           });
           newUser.save(function(err){
             if(err) return handleError(err);
@@ -83,8 +84,8 @@ io.sockets.on('connect',function(socket){
            person.socketID = socket.id;
            person.save();
            console.log("now this client's socketID = " + socket.id);
-           socket.emit('confirmed', true);
            socket.emit('myImform', person);
+           socket.emit('confirmed', true);
          }else{
            socket.emit('confirmed', false);
          }
@@ -99,6 +100,15 @@ io.sockets.on('connect',function(socket){
           person.save();
         }else{
           console.log('we can not find this person');
+        }
+      })
+    });
+
+    socket.on('myPlaylist', function(data){
+      Account.findOneAndUpdate({socketID:socket.id}, {playList:data}, {new: true}, function(err, person){
+        if(err) return handleError(err);
+        if(person){
+          console.log('this person change the playlist');
         }
       })
     });
@@ -132,30 +142,10 @@ io.sockets.on('connect',function(socket){
                 });
               });
 
-
-
             }else{
               console.log('we could not find this person');
             }
           });
-
-          // Account.findOne({wantMatch:true, matchStatus:false,socketID:{$ne:socket.id}}, function(err,person){
-          //   if(err) return handleError(err);
-          //   if(person){
-          //       console.log('we find the the patner');
-          //       socket.emit('match-up', person.peerID);
-          //       io.to(person.socketID).emit('partnerID', hostPeerID);
-          //       person.matchStatus = true;
-          //       person.save();
-          //       Account.findOneAndUpdate({socketID:socket.id}, {matchStatus:true}, function(err, doc){
-          //         if(err) return handleError(err);
-          //         console.log('now these two people are all set to matchStatus');
-          //       })
-          //   }else{
-          //     console.log('we cannot find the person now');
-          //     socket.emit('waitforPatner', true);
-          //   }
-          // });
 
         });
 
@@ -207,7 +197,6 @@ io.sockets.on('connect',function(socket){
           person.matchStatus = false;
           person.save();
           console.log("we lose this client and clean its data");
-
         }else{
           console.log('we could not find this person');
         }
@@ -235,7 +224,8 @@ db.once('open',function(){
      peerID: String,
      onlineStatus: Boolean,
      wantMatch: Boolean,
-     matchStatus: Boolean
+     matchStatus: Boolean,
+     playList:[{type:String}],
   });
 
   Account = mongoose.model('accounts', AccountSchema);

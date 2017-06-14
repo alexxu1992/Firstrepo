@@ -1,23 +1,35 @@
-var second;
-var startTime;
-var soundsNum = 16;
+var sketch = {
+  second: 0,
+  startTime: 0,
+  soundsNum: 16,
+  fireSounds:[],
+  waterSounds:[],
+  fireTakers:[],
+  waterTakers:[],
+  myMusicTakers:[],
+  clientMusicTakers:[],
+  myIndex:0,
+  clientIndex:0
+}
 
-var canvas;
 function setup() {
-  canvas = createCanvas(1680, 1120);
-  canvas.className = 'mycanvas';
-  initMymusic();
+  app.canvas = createCanvas(1680, 1120);
+  //initTheMusic();
 }
 
 ////////////////////////////////////////////load the music
-var fireSounds = [];
-var waterSounds = [];
-
 function preload() {
   for (i = 0; i < 16; i++) {
-    fireSounds[i] = loadSound('../data/' + i + 'fire.mp3'); //now the fire music are my sounds
-    waterSounds[i] = loadSound('../data/' + i + 'water.mp3');//using as the partner's sounds temporarily
+    sketch.fireSounds[i] = loadSound('../data/' + i + 'fire.mp3');
+    app.materialSounds[i] = sketch.fireSounds[i];
+    app.allSounds[i] = sketch.fireSounds[i];
   }
+  for(i = 0; i < 16; i++){
+    sketch.waterSounds[i] = loadSound('../data/' + i + 'water.mp3');
+    app.materialSounds[i + 16] = sketch.waterSounds[i];
+    app.allSounds[i + 16] = sketch.waterSounds[i];
+  }
+
 }
 
 //////////////////////////////////////////define the Musictaker class
@@ -43,8 +55,8 @@ Musictaker.prototype.begin = function(){
   this.sound.stop();
   this.decayTime = 0.0;
   this.opacity = 255;
-  this.starttime = second;
-  this.jumptime = second % this.duration;
+  this.startTime = sketch.second;
+  this.jumptime = sketch.second % this.duration;
   this.isplay = true;
   this.stay = true;
   this.onemore = false;
@@ -56,12 +68,11 @@ Musictaker.prototype.begin = function(){
 Musictaker.prototype.display = function(){
   this.opacity = map(this.vol, 0, 1, 0, 255);
   if(this.status == 'Host'){
-    fill(255,163,26,this.opacity);
-  } else{
     fill(179,236,255,this.opacity);
+  } else{
+    fill(255,163,26,this.opacity);
   }
     rect(this.gridX * 0.25 * width, this.gridY * 0.25 * height, 0.25 * width, 0.25 * height);
-
 }
 
 Musictaker.prototype.currentPlay = function(){
@@ -70,7 +81,7 @@ Musictaker.prototype.currentPlay = function(){
     this.vol += 0.05 * offset;
     this.sound.setVolume(this.vol);
   }
-  if(second > this.starttime + (this.duration - this.jumptime)){
+  if(sketch.second > this.startTime + (this.duration - this.jumptime)){
     this.begin();
   }
 }
@@ -89,18 +100,31 @@ Musictaker.prototype.decay = function(){
 
 }
 //////////////////////////////////////////////////////////////////
-var fireTakers = [];
-var waterTakers = [];
-function initMymusic(){
-  for(i = 0; i < soundsNum; i++){
-    fireTakers.push(new Musictaker(fireSounds[i], i, 'Host'));
-    waterTakers.push(new Musictaker(waterSounds[i], i, 'Client'));
+
+/////////////////////////////////here we set the sequence of the music
+function initTheMusic(){
+  //console.log(Me.playlist);
+  for(i = 0; i < sketch.soundsNum; i++){ //going through all the musicTable tabs
+    for(var j = 0; j < app.allSounds.length; j++){ //generating my table
+        if(app.allSounds[j].url == Me.playlist[i]){
+          sketch.myMusicTakers.push(new Musictaker(app.allSounds[j], i, 'Host'));
+          break;
+        }
+    }
+    for(var k = 0; k < app.allSounds.length; k++){ //generating client table
+        if(app.allSounds[k].url == Client.playlist[i]){
+          sketch.clientMusicTakers.push(new Musictaker(app.allSounds[k], i, 'Client'));
+          break;
+        }
+    }
   }
+  console.log(sketch.myMusicTakers);
+
+  enterSketch();
 }
 
-var myIndex = 0;
-var clientIndex = 0;
-
+// var sketch.myIndex = 0;
+// var clientIndex = 0;
 function getMouseIndex(){
   var LocX = floor(4 * mouseX / width);
   var LocY = floor(4 * mouseY / height);
@@ -113,98 +137,82 @@ function getMouseIndex(){
 }
 ///////////////////////////////////////////////////////////////
 
-//////////////////////////////////////////// create fire music
-var fireIndex = 0;
-var fireLastInd = 0;
-function runFireMusic(theIndex){
-  fireIndex = theIndex;
-  //SendoutIndex(TotalInd);
-  if(fireIndex != fireLastInd){
-    fireTakers[fireLastInd].stay = false;
+//////////////////////////////////////////// run my music
+var myLastInd = 0;
+function runMyMusic(theIndex){
+  if(theIndex != myLastInd){
+    sketch.myMusicTakers[myLastInd].stay = false;
   }
   //to initialize the start point of a taker
-  if(!fireTakers[fireIndex].stay){
-    fireTakers[fireIndex].begin();
+  if(!sketch.myMusicTakers[theIndex].stay){
+    sketch.myMusicTakers[theIndex].begin();
   }
   //on the process of the taker
-  fireTakers[fireIndex].currentPlay();
-
+  sketch.myMusicTakers[theIndex].currentPlay();
   //judge the decay of others position
-  for(i = 0; i < soundsNum; i++){
-    if(i != fireIndex && fireTakers[i].isplay){
-      fireTakers[i].decay();
+  for(i = 0; i < sketch.soundsNum; i++){
+    if(i != theIndex && sketch.myMusicTakers[i].isplay){
+      sketch.myMusicTakers[i].decay();
     }
-    fireTakers[i].display();
+    sketch.myMusicTakers[i].display();
   }
-  fireLastInd = fireIndex;
-
+  myLastInd = theIndex;
 }
-
 
 ///////////////////////////////////////////////////////////
 
-//////////////////////////////////////////// crete water music
-
-var waterIndex = 0;
-var waterLastInd = 0;
-function runWaterMusic(theIndex){
-  waterIndex = theIndex;
-  if(waterIndex != waterLastInd){
-    waterTakers[waterLastInd].stay = false;
+//////////////////////////////////////////// run client music
+var clientLastInd = 0;
+function runClientMusic(theIndex){
+  if(theIndex != clientLastInd){
+    sketch.clientMusicTakers[clientLastInd].stay = false;
   }
   //to initialize the start point of a taker
-  if(!waterTakers[waterIndex].stay){
-    waterTakers[waterIndex].begin();
+  if(!sketch.clientMusicTakers[theIndex].stay){
+    sketch.clientMusicTakers[theIndex].begin();
   }
   //on the process of the taker
-  waterTakers[waterIndex].currentPlay();
+  sketch.clientMusicTakers[theIndex].currentPlay();
 
   //judge the decay of others position
-  for(i = 0; i < soundsNum; i++){
-    if(i != waterIndex && waterTakers[i].isplay){
-      waterTakers[i].decay();
+  for(i = 0; i < sketch.soundsNum; i++){
+    if(i != theIndex && sketch.clientMusicTakers[i].isplay){
+      sketch.clientMusicTakers[i].decay();
     }
-    waterTakers[i].display();
+    sketch.clientMusicTakers[i].display();
   }
-  waterLastInd = waterIndex;
-
+  clientLastInd = theIndex;
 }
 /////////////////////////////////////////////////////////////////
 
-////////////////////////////////////////////enter the sketch to play with others
-var G_partnerID = null;
-var G_conn = null;
+//////////////////////////////////////////// forwardly enter the sketch to play with others
 socket.on('match-up', function(partner_peerID){
   console.log('the patner peer_id is' + partner_peerID);
-  G_partnerID = partner_peerID;
-  var conn = peer.connect(partner_peerID);
-  G_conn = conn;
+  Client.peerId = partner_peerID;
+  var conn = Me.peer.connect(partner_peerID);
+  app.conn = conn;
   conn.on('open', function(){
-   startTime = millis()/1000;
-   enterSketch();
+   // sketch.startTime = millis()/1000;
+   //  enterSketch();
+    conn.send({
+      event: 'clientList',
+      clientList: Me.playlist
+    });
     // Receive messages
    conn.on('data', function(data) {
-      clientIndex = data.clientInd;
+      console.log(data.event);
+      if(data.event == 'clientList'){
+        Client.playlist = data.clientList;
+        initTheMusic();
+        //enterSketch();
+        sketch.startTime = millis()/1000;
+        startActivePlay();
+      }
+      else if(data.event == 'Index'){
+        sketch.clientIndex = data.clientInd;
+      }
    });
     // Send messages
-    G_myPlay = setInterval(function(){
-      background(0);
-      second = millis()/1000 - startTime;
-      myIndex = getMouseIndex();
-      runFireMusic(myIndex);
-      runWaterMusic(clientIndex);
-      conn.send({
-         clientInd:myIndex,
-         time: second
-       });
-      G_timer.innerHTML = 'The time now is ' + floor(second);
-      //////////////to decide whether to make friend
-      if(second > 5 && G_choiceHide){
-        G_choiceHide = false;
-        makeChoice();
-      }
-
-   },1000/60);
 
   });
 
@@ -214,21 +222,40 @@ socket.on('match-up', function(partner_peerID){
 
 });
 
-var G_myPlay;
-var G_timer;
-var G_canvas = null;
 function enterSketch(){
-  G_canvas = document.getElementsByTagName('canvas')[0];
-  G_canvas.style.display = 'inline';
-  G_canvas.className = 'page4';
+  app.canvas = document.getElementsByTagName('canvas')[0];
+  app.canvas.style.display = 'inline';
+  app.canvas.className = 'page4';
   var page3 = document.getElementById('personalPage');
+
   page3.className = 'page3 invisible';
 
-  G_timer = document.getElementById('gameTimer');
-  G_timer.style.display = 'inline';
+  app.timer = document.getElementById('gameTimer');
+  app.timer.style.display = 'inline';
 }
 
-var G_choiceHide = true;
+function startActivePlay(){
+  console.log('i am start the activePlay now');
+  app.play = setInterval(function(){
+    background(0);
+    sketch.second = millis()/1000 - sketch.startTime;
+    sketch.myIndex = getMouseIndex();
+    runMyMusic(sketch.clientIndex);
+    runClientMusic(sketch.myIndex);
+    app.conn.send({
+       event: 'Index',
+       clientInd:sketch.myIndex,
+       time: sketch.second
+     });
+    app.timer.innerHTML = 'The time now is ' + floor(sketch.second);
+    //////////////to decide whether to make friend
+    if(sketch.second > 15 && app.choiceHide){
+      app.choiceHide = false;
+      makeChoice();
+    }
+ },1000/60);
+}
+
 function makeChoice(){
   var choice = document.getElementById('choice');
   choice.style.display = 'inline';
@@ -243,57 +270,56 @@ function makeChoice(){
 
 }
 
-var G_agree = false;
-var G_partnerName = null;
 function makeFriend(){
   socket.emit('wantToKnow', {
-    partner: G_partnerID,
-    myName: myGoodname
+    partner: Client.peerId,
+    myName: Me.Name
   })
-  G_agree = true;
-  if(G_partnerName){
-    alert('Yes! Your friend is waiting for you, its name is ' + G_partnerName);
+  app.agree = true;
+  if(Client.Name){
+    alert('Yes! Your friend is waiting for you, its name is ' + Client.Name);
   }else{
-    alert('need to wait for your partner response');
+    //alert('need to wait for your partner response');
   }
 }
+
 socket.on('PartnerName', function(partner_imform){
-  G_partnerName = partner_imform;
-  if(G_agree){
-    alert('Yes! Your friend is  ' + G_partnerName);
-    G_agree = false;
+  Client.Name = partner_imform;
+  if(app.agree){
+    alert('Yes! Your friend is  ' + Client.Name);
+    app.agree = false;
   }
 })
 
 function declineFriend(){
-  socket.emit('decline', G_partnerID);
+  socket.emit('decline', Client.peerId);
 }
+
 socket.on('declined', function(data){
   if(data == true){
-    alert("Sorry, your partner don't want to share the name now, maybe later!");
+    //alert("Sorry, your partner don't want to share the name now, maybe later!");
   }
   //backtoPersonal();
 })
 
-
 function backtoPersonal(){
-  if(G_conn.open){
-   G_conn.close();
+  if(app.conn.open){
+   app.conn.close();
   }
-  socket.emit('closeP2P', G_partnerID);
+  socket.emit('closeP2P', Client.peerId);
   var page4 = document.getElementsByClassName('page4');
   console.log(page4);
   for(var i = 0; i < page4.length; i++){
      page4[i].style.display = 'none';
   }
-  clearInterval(G_myPlay);
+  clearInterval(app.play);
   var page3 = document.getElementById('personalPage');
   page3.className = 'page3 visible';
   var waitinghint = document.getElementById('waiting');
   waitinghint.className = 'invisible';
-  G_partnerName = null;
-  G_partnerID = null;
-  G_conn = null;
-  G_choiceHide = true;
+  Client.Name = null;
+  Client.peerId = null;
+  app.conn = null;
+  app.choiceHide = true;
 }
 ///////////////////////////////////////////////////////////////
